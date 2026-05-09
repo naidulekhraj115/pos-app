@@ -17,30 +17,30 @@
       background: linear-gradient(135deg, #0f172a, #1e3a8a);
       color: white;
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      align-items: center;
-      padding: 60px;
+      padding: 80px;
     }
 
-    .left-content {
-      max-width: 420px;
+    .slider {
+      height: 220px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 40px;
+      font-size: 20px;
+      color: #cbd5e1;
+      font-weight: 500;
     }
 
     .left h1 {
-      font-size: 32px;
+      font-size: 34px;
       margin-bottom: 15px;
     }
 
     .left p {
-      color: #cbd5e1;
+      font-size: 15px;
       line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    #featureText {
-      font-weight: 500;
-      color: #93c5fd;
-      margin-top: 20px;
+      color: #cbd5e1;
     }
 
     /* RIGHT SIDE */
@@ -54,10 +54,10 @@
 
     .card {
       background: white;
-      padding: 40px;
-      width: 360px;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      padding: 45px 40px;
+      width: 380px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
     }
 
     h2 {
@@ -73,8 +73,8 @@
 
     input {
       width: 100%;
-      padding: 12px 14px;
-      margin: 6px 0 18px 0;
+      padding: 14px 16px;
+      margin: 8px 0 20px 0;
       border-radius: 10px;
       border: 1px solid #e5e7eb;
       font-size: 14px;
@@ -90,7 +90,7 @@
 
     .btn {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: none;
       border-radius: 10px;
       background: linear-gradient(90deg, #0f172a, #1e3a8a);
@@ -112,6 +112,7 @@
       margin-top: -12px;
       margin-bottom: 12px;
     }
+
   </style>
 </head>
 
@@ -119,16 +120,16 @@
 
 <!-- LEFT SIDE -->
 <div class="left">
-  <div class="left-content">
-    <h1>Smart POS & Billing System</h1>
 
-    <p>
-      A web-based solution to manage billing, inventory, and sales efficiently.
-      Designed for retail businesses with real-time tracking and profit insights.
-    </p>
+  <div class="slider" id="sliderText"></div>
 
-    <p id="featureText"></p>
-  </div>
+  <h1>Smart POS & Billing System</h1>
+
+  <p>
+    A web-based solution to manage billing, inventory, and sales efficiently.
+    Designed for retail businesses with real-time tracking and profit insights.
+  </p>
+
 </div>
 
 <!-- RIGHT SIDE -->
@@ -158,23 +159,23 @@ const supabaseClient = supabase.createClient(
   "YOUR_KEY"
 );
 
-/* FEATURE SLIDER */
-const features = [
-  "✔ Real-time Billing System",
-  "✔ Inventory Management",
-  "✔ Sales & Profit Reports",
-  "✔ Tax Calculation Support",
-  "✔ Easy Product Management"
+/* SLIDER */
+const slides = [
+  "🚀 Fast & Secure Billing Experience",
+  "📊 Real-time Inventory Tracking",
+  "💰 Profit & Sales Insights",
+  "🧾 Smart Tax Calculation",
+  "⚡ Built for Modern Retail Businesses"
 ];
 
 let i = 0;
 
 setInterval(() => {
-  document.getElementById("featureText").innerText = features[i];
-  i = (i + 1) % features.length;
-}, 2000);
+  document.getElementById("sliderText").innerText = slides[i];
+  i = (i + 1) % slides.length;
+}, 2500);
 
-/* LOGIN FUNCTION */
+/* LOGIN */
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
