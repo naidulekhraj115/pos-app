@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login</title>
+  <title>POS Login</title>
 
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #f3f4f6;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: #f5f7fa;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,57 +16,64 @@
 
     .card {
       background: white;
-      padding: 30px;
-      width: 350px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      padding: 40px 35px;
+      width: 360px;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
     h2 {
-      margin-bottom: 20px;
-      font-size: 18px;
+      margin-bottom: 25px;
+      font-size: 20px;
+      font-weight: 600;
       color: #111827;
     }
 
     label {
       font-size: 13px;
+      font-weight: 500;
       color: #374151;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      margin: 6px 0 15px 0;
-      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 6px 0 18px 0;
+      border-radius: 8px;
       border: 1px solid #d1d5db;
       outline: none;
+      font-size: 14px;
+      transition: 0.2s;
     }
 
     input:focus {
       border-color: #1e3a8a;
+      box-shadow: 0 0 0 2px rgba(30,58,138,0.1);
     }
 
     .btn {
       width: 100%;
       padding: 12px;
-      background: #0f172a;
+      background: linear-gradient(90deg, #0f172a, #1e3a8a);
       color: white;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      border-radius: 8px;
       font-weight: 500;
+      cursor: pointer;
+      transition: 0.25s;
     }
 
     .btn:hover {
-      background: #020617;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
     }
 
     .error {
-      color: red;
+      color: #ef4444;
       font-size: 12px;
       display: none;
-      margin-top: -10px;
-      margin-bottom: 10px;
+      margin-top: -12px;
+      margin-bottom: 12px;
     }
 
   </style>
@@ -79,12 +86,12 @@
   <h2>POS Login</h2>
 
   <label>Username</label>
-  <input id="email">
-  <div id="emailError" class="error">Field is required</div>
+  <input id="email" placeholder="Enter username">
+  <div id="emailError" class="error">Required</div>
 
   <label>Password</label>
-  <input id="password" type="password">
-  <div id="passError" class="error">Field is required</div>
+  <input id="password" type="password" placeholder="Enter password">
+  <div id="passError" class="error">Required</div>
 
   <button class="btn" onclick="login()">Login</button>
 
