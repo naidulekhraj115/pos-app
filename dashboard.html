@@ -3,6 +3,7 @@
 <head>
   <title>Dashboard</title>
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -20,14 +21,8 @@
       padding: 20px;
     }
 
-    .sidebar h2 {
-      margin-bottom: 30px;
-    }
-
-    .sidebar p {
-      margin: 15px 0;
-      cursor: pointer;
-    }
+    .sidebar h2 { margin-bottom: 30px; }
+    .sidebar p { margin: 15px 0; cursor: pointer; }
 
     .main {
       flex: 1;
@@ -60,20 +55,50 @@
       margin-top: 30px;
     }
 
+    .chart-box {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      height: 320px;
+    }
+
     canvas {
+      width: 100% !important;
+      height: 240px !important;
+    }
+
+    .table-box {
+      margin-top: 30px;
       background: white;
       padding: 20px;
       border-radius: 10px;
     }
 
-    .logout {
-      background: red;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    .btn {
+      background: #1e3a8a;
       color: white;
-      border: none;
       padding: 8px 12px;
+      border: none;
       cursor: pointer;
       border-radius: 5px;
     }
+
+    .logout {
+      background: red;
+    }
+
   </style>
 </head>
 
@@ -94,10 +119,11 @@
 
     <div>
       <span id="userEmail"></span>
-      <button class="logout" onclick="logout()">Logout</button>
+      <button class="btn logout" onclick="logout()">Logout</button>
     </div>
   </div>
 
+  <!-- CARDS -->
   <div class="cards">
     <div class="card">
       <h4>Total Sales</h4>
@@ -115,9 +141,37 @@
     </div>
   </div>
 
+  <!-- CHARTS -->
   <div class="charts">
-    <canvas id="pieChart" width="300"></canvas>
-    <canvas id="barChart" width="300"></canvas>
+
+    <div class="chart-box">
+      <h4>Profit vs Cost</h4>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h4>Sales Overview</h4>
+      <canvas id="barChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- PRODUCT SALES TABLE -->
+  <div class="table-box">
+    <h3>Product Wise Sales</h3>
+    <button class="btn" onclick="exportData()">Export Profit Data</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Sold Qty</th>
+          <th>Revenue</th>
+          <th>Profit</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
   </div>
 
 </div>
@@ -130,44 +184,52 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
 );
 
-// 🔥 SHOW LOGGED IN USER
+// USER
 async function loadUser() {
-  const { data } = await supabase.auth.getUser();
-
-  if (data.user) {
-    document.getElementById("userEmail").innerText = data.user.email;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    document.getElementById("userEmail").innerText = user.email;
   } else {
     window.location = "index.html";
   }
 }
 
-// 🔥 LOGOUT
+// LOGOUT
 async function logout() {
   await supabase.auth.signOut();
   window.location = "index.html";
 }
 
-// 🔥 DASHBOARD DATA
+// DASHBOARD DATA
+let pieChart, barChart;
+let exportDataArr = [];
+
 async function loadDashboard() {
 
-  // PRODUCTS COUNT
-  const { data: products } = await supabase
-    .from("products")
-    .select("*");
-
+  const { data: products } = await supabase.from("products").select("*");
   document.getElementById("products").innerText = products.length;
 
-  // TRANSACTIONS
-  const { data: transactions } = await supabase
-    .from("transactions")
-    .select("*");
+  const { data: transactions } = await supabase.from("transactions").select("*");
 
   let totalSales = 0;
   let totalCost = 0;
 
+  let productMap = {};
+
   transactions.forEach(t => {
     totalSales += t.total_amount || 0;
     totalCost += t.total_cost || 0;
+
+    if (t.items) {
+      t.items.forEach(i => {
+        if (!productMap[i.name]) {
+          productMap[i.name] = { qty: 0, revenue: 0, profit: 0 };
+        }
+        productMap[i.name].qty += i.qty;
+        productMap[i.name].revenue += i.price * i.qty;
+        productMap[i.name].profit += (i.price - i.buying_price) * i.qty;
+      });
+    }
   });
 
   let profit = totalSales - totalCost;
@@ -175,36 +237,75 @@ async function loadDashboard() {
   document.getElementById("sales").innerText = "₹" + totalSales;
   document.getElementById("profit").innerText = "₹" + profit;
 
-  // PIE CHART
-  new Chart(document.getElementById("pieChart"), {
+  // CHART FIX
+  if (pieChart) pieChart.destroy();
+  if (barChart) barChart.destroy();
+
+  pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
       labels: ["Profit", "Cost"],
       datasets: [{
-        data: [profit, totalCost],
+        data: [profit, totalCost]
       }]
     }
   });
 
-  // BAR CHART
-  new Chart(document.getElementById("barChart"), {
+  barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
       labels: ["Sales", "Profit"],
       datasets: [{
-        data: [totalSales, profit],
+        data: [totalSales, profit]
       }]
     }
   });
 
+  // TABLE
+  let html = "";
+  exportDataArr = [];
+
+  for (let name in productMap) {
+    let p = productMap[name];
+
+    html += `
+      <tr>
+        <td>${name}</td>
+        <td>${p.qty}</td>
+        <td>₹${p.revenue}</td>
+        <td>₹${p.profit}</td>
+      </tr>
+    `;
+
+    exportDataArr.push({
+      name,
+      qty: p.qty,
+      revenue: p.revenue,
+      profit: p.profit
+    });
+  }
+
+  document.getElementById("tableBody").innerHTML = html;
+}
+
+// EXPORT CSV
+function exportData() {
+  let csv = "Product,Qty,Revenue,Profit\n";
+
+  exportDataArr.forEach(d => {
+    csv += `${d.name},${d.qty},${d.revenue},${d.profit}\n`;
+  });
+
+  let blob = new Blob([csv], { type: "text/csv" });
+  let a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "profit_report.csv";
+  a.click();
 }
 
 // INIT
 loadUser();
 loadDashboard();
-
-// OPTIONAL LIVE UPDATE
-setInterval(loadDashboard, 5000);
 
 </script>
 
