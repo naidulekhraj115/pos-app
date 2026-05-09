@@ -1,195 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Page</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      height: 100vh;
-      display: flex;
-    }
-
-    /* LEFT SIDE */
-    .left {
-      flex: 1;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 100px;
-    }
-
-    .left h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .left p {
-      font-size: 16px;
-      color: #cbd5e1;
-      line-height: 1.7;
-      max-width: 450px;
-    }
-
-    .features {
-      margin-top: 30px;
-      color: #93c5fd;
-      font-size: 14px;
-    }
-
-    .features p {
-      margin: 8px 0;
-    }
-
-    /* RIGHT SIDE */
-    .right {
-      flex: 1;
-      background: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: white;
-      padding: 50px 45px;
-      width: 380px;
-      border-radius: 18px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      margin-bottom: 30px;
-      font-size: 22px;
-      font-weight: 600;
-    }
-
-    label {
-      font-size: 13px;
-      color: #374151;
-      font-weight: 500;
-    }
-
-    input {
-      width: 100%;
-      padding: 14px 16px;
-      margin: 8px 0 20px 0;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      font-size: 14px;
-      background: #f9fafb;
-    }
-
-    input:focus {
-      border-color: #1e3a8a;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(30,58,138,0.15);
-      outline: none;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(90deg, #0f172a, #1e3a8a);
-      color: white;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .error {
-      color: #ef4444;
-      font-size: 12px;
-      display: none;
-      margin-top: -12px;
-      margin-bottom: 12px;
-    }
-  </style>
+  <title>Login Test</title>
 </head>
 
 <body>
 
-<!-- LEFT -->
-<div class="left">
+<h2>Login Test</h2>
 
-  <h1>Smart POS & Billing System</h1>
+<input id="email" placeholder="email"><br><br>
+<input id="password" placeholder="password"><br><br>
 
-  <p>
-    A web-based solution to manage billing, inventory, and sales efficiently.
-    Designed for retail businesses with real-time tracking and profit insights.
-  </p>
-
-  <div class="features">
-    <p>✔ Real-time Billing</p>
-    <p>✔ Inventory Management</p>
-    <p>✔ Sales & Profit Reports</p>
-    <p>✔ Tax Calculation Support</p>
-  </div>
-
-</div>
-
-<!-- RIGHT -->
-<div class="right">
-  <div class="card">
-
-    <h2>Login</h2>
-
-    <label>Email</label>
-    <input id="email" placeholder="Enter email">
-    <div id="emailError" class="error">Required</div>
-
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Enter password">
-    <div id="passError" class="error">Required</div>
-
-    <button class="btn" id="loginBtn">Login</button>
-
-  </div>
-</div>
-
-<!-- SUPABASE -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<button id="loginBtn">Login</button>
 
 <script>
-const supabaseClient = window.supabase.createClient(
-  "YOUR_URL",
-  "YOUR_KEY"
-);
-
-// BUTTON CLICK FIX
-document.getElementById("loginBtn").addEventListener("click", login);
-
-async function login() {
+document.getElementById("loginBtn").addEventListener("click", function () {
+  alert("Button is working");
   console.log("clicked");
-
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  // validation
-  document.getElementById("emailError").style.display = !email ? "block" : "none";
-  document.getElementById("passError").style.display = !password ? "block" : "none";
-
-  if (!email || !password) return;
-
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password
-  });
-
-  if (error) {
-    alert(error.message);
-  } else {
-    window.location = "dashboard.html";
-  }
-}
+});
 </script>
 
 </body>
