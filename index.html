@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>POS Login</title>
+  <title>Login Page</title>
 
   <style>
     body {
@@ -11,7 +11,7 @@
       display: flex;
     }
 
-    /* LEFT SIDE (AESTHETIC) */
+    /* LEFT SIDE */
     .left {
       flex: 1;
       background: linear-gradient(135deg, #0f172a, #1e3a8a);
@@ -19,11 +19,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 40px;
+      padding: 60px;
     }
 
     .left-content {
-      max-width: 400px;
+      max-width: 420px;
     }
 
     .left h1 {
@@ -34,12 +34,19 @@
     .left p {
       color: #cbd5e1;
       line-height: 1.6;
+      margin-bottom: 20px;
     }
 
-    /* RIGHT SIDE (LOGIN) */
+    #featureText {
+      font-weight: 500;
+      color: #93c5fd;
+      margin-top: 20px;
+    }
+
+    /* RIGHT SIDE */
     .right {
       flex: 1;
-      background: #f8fafc;
+      background: #f3f4f6;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -48,8 +55,8 @@
     .card {
       background: white;
       padding: 40px;
-      width: 340px;
-      border-radius: 12px;
+      width: 360px;
+      border-radius: 14px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
@@ -72,13 +79,13 @@
       border: 1px solid #e5e7eb;
       font-size: 14px;
       background: #f9fafb;
-      transition: 0.2s;
     }
 
     input:focus {
       border-color: #1e3a8a;
       background: white;
       box-shadow: 0 0 0 3px rgba(30,58,138,0.1);
+      outline: none;
     }
 
     .btn {
@@ -105,7 +112,6 @@
       margin-top: -12px;
       margin-bottom: 12px;
     }
-
   </style>
 </head>
 
@@ -114,11 +120,14 @@
 <!-- LEFT SIDE -->
 <div class="left">
   <div class="left-content">
-    <h1>Smart POS System</h1>
+    <h1>Smart POS & Billing System</h1>
+
     <p>
-      Manage billing, inventory, and reports in one powerful platform.
-      Designed for modern businesses.
+      A web-based solution to manage billing, inventory, and sales efficiently.
+      Designed for retail businesses with real-time tracking and profit insights.
     </p>
+
+    <p id="featureText"></p>
   </div>
 </div>
 
@@ -128,8 +137,8 @@
 
     <h2>Login</h2>
 
-    <label>Username</label>
-    <input id="email" placeholder="Enter username">
+    <label>Email</label>
+    <input id="email" placeholder="Enter email">
     <div id="emailError" class="error">Required</div>
 
     <label>Password</label>
@@ -149,6 +158,23 @@ const supabaseClient = supabase.createClient(
   "YOUR_KEY"
 );
 
+/* FEATURE SLIDER */
+const features = [
+  "✔ Real-time Billing System",
+  "✔ Inventory Management",
+  "✔ Sales & Profit Reports",
+  "✔ Tax Calculation Support",
+  "✔ Easy Product Management"
+];
+
+let i = 0;
+
+setInterval(() => {
+  document.getElementById("featureText").innerText = features[i];
+  i = (i + 1) % features.length;
+}, 2000);
+
+/* LOGIN FUNCTION */
 async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -176,7 +202,7 @@ async function login() {
   });
 
   if (error) {
-    alert("Invalid login");
+    alert("Invalid credentials");
   } else {
     window.location = "dashboard.html";
   }
