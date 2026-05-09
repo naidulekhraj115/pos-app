@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Products</title>
+
+  <style>
+    body { margin:0; font-family:Arial; display:flex; }
+
+    .sidebar {
+      width:220px;
+      background:#0f172a;
+      color:white;
+      height:100vh;
+      padding:20px;
+    }
+
+    .sidebar p {
+      margin:15px 0;
+      cursor:pointer;
+    }
+
+    .main {
+      flex:1;
+      padding:20px;
+      background:#f3f4f6;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn {
+      background:#1e3a8a;
+      color:white;
+      padding:8px 12px;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    table {
+      width:100%;
+      margin-top:20px;
+      background:white;
+      border-radius:10px;
+      border-collapse:collapse;
+    }
+
+    th, td {
+      padding:12px;
+      border-bottom:1px solid #eee;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+  <h2>POS System</h2>
+
+  <p onclick="goDashboard()">Dashboard</p>
+  <p onclick="goPOS()">Point of Sale</p>
+  <p onclick="goProducts()">Products</p>
+  <p onclick="goReports()">Reports</p>
+</div>
+
+<div class="main">
+
+  <div class="topbar">
+    <h2>Products</h2>
+    <button class="btn" onclick="goAdd()">+ Add New</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Buying</th>
+        <th>Selling</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+
+    <tbody id="productTable"></tbody>
+  </table>
+
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://glsjjkcnrhmdiqtfasrv.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
+);
+
+// LOAD PRODUCTS
+async function loadProducts(){
+  const { data } = await supabase.from("products").select("*");
+
+  let html = "";
+
+  data.forEach(p=>{
+    html += `
+      <tr>
+        <td>${p.name}</td>
+        <td>₹${p.buying_price}</td>
+        <td>₹${p.selling_price}</td>
+        <td>${p.quantity}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("productTable").innerHTML = html;
+}
+
+// NAV
+window.goDashboard = () => window.location = "dashboard.html";
+window.goPOS = () => window.location = "pos.html";
+window.goProducts = () => window.location = "products.html";
+window.goReports = () => alert("Coming soon");
+window.goAdd = () => window.location = "add-product.html";
+
+loadProducts();
+</script>
+
+</body>
+</html>
