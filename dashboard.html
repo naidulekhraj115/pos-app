@@ -3,6 +3,8 @@
 <head>
   <title>Dashboard</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       margin:0;
@@ -10,7 +12,6 @@
       display:flex;
     }
 
-    /* SIDEBAR */
     .sidebar {
       width:220px;
       background:#0f172a;
@@ -19,20 +20,11 @@
       padding:20px;
     }
 
-    .sidebar h2 {
-      margin-bottom:20px;
-    }
-
     .sidebar p {
       margin:15px 0;
       cursor:pointer;
     }
 
-    .sidebar p:hover {
-      color:#93c5fd;
-    }
-
-    /* MAIN */
     .main {
       flex:1;
       padding:20px;
@@ -48,17 +40,36 @@
     .logout {
       background:#ef4444;
       color:white;
-      padding:6px 10px;
       border:none;
+      padding:6px 10px;
       border-radius:6px;
       cursor:pointer;
+    }
+
+    .cards {
+      display:flex;
+      gap:20px;
+      margin-top:20px;
     }
 
     .card {
       background:white;
       padding:20px;
-      margin-top:20px;
       border-radius:10px;
+      flex:1;
+    }
+
+    .charts {
+      display:flex;
+      gap:20px;
+      margin-top:20px;
+    }
+
+    canvas {
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      width:100%;
     }
 
   </style>
@@ -88,13 +99,32 @@
     </div>
   </div>
 
-  <div class="card">
-    Welcome to your POS Dashboard 🚀
+  <!-- CARDS -->
+  <div class="cards">
+    <div class="card">
+      <h4>Total Sales</h4>
+      <h2 id="sales">₹0</h2>
+    </div>
+
+    <div class="card">
+      <h4>Total Products</h4>
+      <h2 id="products">0</h2>
+    </div>
+
+    <div class="card">
+      <h4>Profit</h4>
+      <h2 id="profit">₹0</h2>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts">
+    <canvas id="barChart"></canvas>
+    <canvas id="pieChart"></canvas>
   </div>
 
 </div>
 
-<!-- SUPABASE -->
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -103,31 +133,79 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
 );
 
-/* ---------- NAVIGATION ---------- */
+/* NAV */
 window.goDashboard = () => window.location = "dashboard.html";
-window.goPOS = () => window.location = "pos.html";
+window.goPOS = () => alert("POS coming soon");
 window.goProducts = () => window.location = "products.html";
-window.goReports = () => alert("Reports coming soon");
+window.goReports = () => alert("Reports soon");
 
-/* ---------- LOGOUT ---------- */
-window.logout = async function(){
+/* LOGOUT */
+window.logout = async () => {
   await supabase.auth.signOut();
   window.location = "index.html";
 };
 
-/* ---------- SHOW USER EMAIL ---------- */
+/* USER */
 async function loadUser(){
   const { data } = await supabase.auth.getUser();
-
   if(data?.user){
     document.getElementById("userEmail").innerText = data.user.email;
-  } else {
-    // agar login nahi hai to redirect
-    window.location = "index.html";
   }
 }
 
+/* LOAD DATA */
+async function loadDashboard(){
+
+  const { data } = await supabase.from("products").select("*");
+
+  let totalProducts = data.length;
+  let totalSales = 0;
+  let totalProfit = 0;
+
+  let names = [];
+  let profits = [];
+
+  data.forEach(p => {
+    let sales = p.selling_price * p.quantity;
+    let profit = (p.selling_price - p.buying_price) * p.quantity;
+
+    totalSales += sales;
+    totalProfit += profit;
+
+    names.push(p.name);
+    profits.push(profit);
+  });
+
+  document.getElementById("products").innerText = totalProducts;
+  document.getElementById("sales").innerText = "₹" + totalSales;
+  document.getElementById("profit").innerText = "₹" + totalProfit;
+
+  /* BAR CHART */
+  new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: names,
+      datasets: [{
+        label: "Profit by Product",
+        data: profits
+      }]
+    }
+  });
+
+  /* PIE CHART */
+  new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: names,
+      datasets: [{
+        data: profits
+      }]
+    }
+  });
+}
+
 loadUser();
+loadDashboard();
 
 </script>
 
