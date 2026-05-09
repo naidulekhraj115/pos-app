@@ -6,12 +6,16 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: Arial, sans-serif;
       height: 100vh;
-      display: flex;
     }
 
-    /* LEFT SIDE */
+    .container {
+      display: flex;
+      height: 100%;
+    }
+
+    /* LEFT */
     .left {
       flex: 1;
       background: linear-gradient(135deg, #0f172a, #1e3a8a);
@@ -28,23 +32,21 @@
     }
 
     .left p {
-      font-size: 16px;
       color: #cbd5e1;
-      line-height: 1.7;
       max-width: 450px;
+      line-height: 1.6;
     }
 
     .features {
       margin-top: 30px;
       color: #93c5fd;
-      font-size: 14px;
     }
 
     .features p {
       margin: 8px 0;
     }
 
-    /* RIGHT SIDE */
+    /* RIGHT */
     .right {
       flex: 1;
       background: #f3f4f6;
@@ -55,111 +57,83 @@
 
     .card {
       background: white;
-      padding: 50px 45px;
-      width: 380px;
-      border-radius: 18px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      padding: 40px;
+      width: 320px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    h2 {
-      margin-bottom: 30px;
-      font-size: 22px;
-      font-weight: 600;
-    }
-
-    label {
-      font-size: 13px;
-      color: #374151;
-      font-weight: 500;
+    .card h2 {
+      margin-bottom: 20px;
     }
 
     input {
       width: 100%;
-      padding: 14px 16px;
-      margin: 8px 0 20px 0;
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      font-size: 14px;
-      background: #f9fafb;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
-    input:focus {
-      border-color: #1e3a8a;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(30,58,138,0.15);
-      outline: none;
-    }
-
-    .btn {
+    button {
       width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: linear-gradient(90deg, #0f172a, #1e3a8a);
+      padding: 10px;
+      background: #1e3a8a;
       color: white;
-      font-weight: 500;
+      border: none;
       cursor: pointer;
+      border-radius: 5px;
     }
 
-    .btn:hover {
+    button:hover {
       opacity: 0.9;
     }
 
-    .error {
-      color: #ef4444;
-      font-size: 12px;
-      display: none;
-      margin-top: -12px;
-      margin-bottom: 12px;
-    }
   </style>
 </head>
 
 <body>
 
-<!-- LEFT -->
-<div class="left">
+<div class="container">
 
-  <h1>Smart POS & Billing System</h1>
+  <!-- LEFT -->
+  <div class="left">
+    <h1>Smart POS & Billing System</h1>
 
-  <p>
-    A web-based solution to manage billing, inventory, and sales efficiently.
-    Designed for retail businesses with real-time tracking and profit insights.
-  </p>
+    <p>
+      A web-based solution to manage billing, inventory, and sales efficiently.
+      Designed for retail businesses with real-time tracking and profit insights.
+    </p>
 
-  <div class="features">
-    <p>✔ Real-time Billing</p>
-    <p>✔ Inventory Management</p>
-    <p>✔ Sales & Profit Reports</p>
-    <p>✔ Tax Calculation Support</p>
+    <div class="features">
+      <p>✔ Real-time Billing</p>
+      <p>✔ Inventory Management</p>
+      <p>✔ Sales & Profit Reports</p>
+      <p>✔ Tax Calculation Support</p>
+    </div>
   </div>
 
-</div>
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="card">
 
-<!-- RIGHT -->
-<div class="right">
-  <div class="card">
+      <h2>Login</h2>
 
-    <h2>Login</h2>
+      <input id="email" placeholder="Enter email">
+      <input id="password" type="password" placeholder="Enter password">
 
-    <label>Email</label>
-    <input id="email" placeholder="Enter email">
-    <div id="emailError" class="error">Required</div>
+      <button id="loginBtn">Login</button>
 
-    <label>Password</label>
-    <input id="password" type="password" placeholder="Enter password">
-    <div id="passError" class="error">Required</div>
-
-    <button class="btn" id="loginBtn">Login</button>
-
+    </div>
   </div>
+
 </div>
 
 <!-- SUPABASE -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const supabaseClient = window.supabase.createClient(
+const supabaseClient = supabase.createClient(
   "YOUR_URL",
   "YOUR_KEY"
 );
@@ -173,11 +147,10 @@ async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  // validation
-  document.getElementById("emailError").style.display = !email ? "block" : "none";
-  document.getElementById("passError").style.display = !password ? "block" : "none";
-
-  if (!email || !password) return;
+  if (!email || !password) {
+    alert("Enter email & password");
+    return;
+  }
 
   const { error } = await supabaseClient.auth.signInWithPassword({
     email,
