@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      height: 100vh;
+      background: #f3f4f6;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: linear-gradient(180deg, #0f172a, #1e3a8a);
+      color: white;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+
+    .nav a {
+      display: block;
+      padding: 12px 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #cbd5e1;
+      transition: 0.2s;
+    }
+
+    .nav a:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .logout {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .card h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .card p {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    /* QUICK ACTION */
+    .actions {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0f172a, #1e3a8a);
+      color: white;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">POS System</div>
+
+  <div class="nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="billing.html">Point of Sale</a>
+    <a href="product.html">Products</a>
+    <a href="reports.html">Reports</a>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="header">
+    <h1>Dashboard</h1>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Sales</h3>
+      <p id="sales">₹0</p>
+    </div>
+
+    <div class="card">
+      <h3>Total Products</h3>
+      <p id="products">0</p>
+    </div>
+
+    <div class="card">
+      <h3>Transactions</h3>
+      <p id="transactions">0</p>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn" onclick="goBilling()">Start Billing</button>
+    <button class="btn" onclick="goProducts()">Manage Products</button>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+const supabaseClient = supabase.createClient(
+  "https://glsjjkcnrhmdiqtfasrv.supabase.co/rest/v1/",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
+);
+
+/* LOAD DASHBOARD DATA */
+async function loadData() {
+
+  // total products
+  let { data: products } = await supabaseClient
+    .from("products")
+    .select("*");
+
+  document.getElementById("products").innerText = products.length;
+
+  // transactions
+  let { data: transactions } = await supabaseClient
+    .from("transactions")
+    .select("*");
+
+  document.getElementById("transactions").innerText = transactions.length;
+
+  // sales total
+  let total = 0;
+  transactions.forEach(t => total += t.total);
+
+  document.getElementById("sales").innerText = "₹" + total;
+}
+
+loadData();
+
+/* NAVIGATION */
+function goBilling() {
+  window.location = "billing.html";
+}
+
+function goProducts() {
+  window.location = "product.html";
+}
+
+/* LOGOUT */
+async function logout() {
+  await supabaseClient.auth.signOut();
+  window.location = "index.html";
+}
+</script>
+
+</body>
+</html>
