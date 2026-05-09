@@ -110,8 +110,7 @@ window.goPOS=()=>window.location="pos.html";
 // ✅ ✅ ✅ ONLY FIX BELOW
 window.logout = async function(){
   await supabase.auth.signOut();
-  window.location = "index.html";
-};
+window.location.href = "/";};
 // ✅ ✅ ✅
 
 
