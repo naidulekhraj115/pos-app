@@ -1,80 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>POS Login</title>
+  <title>Login</title>
 
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      height: 100vh;
+      background: #f3f4f6;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: white;
+      height: 100vh;
     }
 
-    .login-box {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      padding: 35px;
-      width: 340px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    .card {
+      background: white;
+      padding: 30px;
+      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
     h2 {
       margin-bottom: 20px;
-      font-weight: 500;
-      letter-spacing: 1px;
+      font-size: 18px;
+      color: #111827;
+    }
+
+    label {
+      font-size: 13px;
+      color: #374151;
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.08);
-      color: white;
+      padding: 10px;
+      margin: 6px 0 15px 0;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
       outline: none;
-      transition: 0.3s;
-    }
-
-    input::placeholder {
-      color: #ccc;
     }
 
     input:focus {
-      border-color: #60a5fa;
-      background: rgba(255,255,255,0.12);
+      border-color: #1e3a8a;
     }
 
     .btn {
       width: 100%;
       padding: 12px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      background: #0f172a;
       color: white;
-      transition: 0.3s;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
     }
 
     .btn:hover {
-      background: linear-gradient(90deg, #1d4ed8, #2563eb);
-      transform: translateY(-1px);
+      background: #020617;
     }
 
     .error {
-      color: #f87171;
+      color: red;
       font-size: 12px;
-      text-align: left;
       display: none;
+      margin-top: -10px;
+      margin-bottom: 10px;
     }
 
   </style>
@@ -82,14 +74,16 @@
 
 <body>
 
-<div class="login-box">
+<div class="card">
 
   <h2>POS Login</h2>
 
-  <input id="email" placeholder="Username">
+  <label>Username</label>
+  <input id="email">
   <div id="emailError" class="error">Field is required</div>
 
-  <input id="password" type="password" placeholder="Password">
+  <label>Password</label>
+  <input id="password" type="password">
   <div id="passError" class="error">Field is required</div>
 
   <button class="btn" onclick="login()">Login</button>
