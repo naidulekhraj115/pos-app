@@ -6,14 +6,25 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    body { margin:0; font-family:Arial; display:flex; }
+    body {
+      margin:0;
+      font-family:Arial;
+      display:flex;
+      height:100vh;
+      overflow:hidden; /* FIX */
+    }
 
+    /* SIDEBAR */
     .sidebar {
       width:220px;
       background:#0f172a;
       color:white;
       height:100vh;
       padding:20px;
+
+      position:fixed; /* FIX */
+      left:0;
+      top:0;
     }
 
     .sidebar p {
@@ -22,8 +33,12 @@
       color:#cbd5e1;
     }
 
+    /* MAIN */
     .main {
-      flex:1;
+      margin-left:220px; /* FIX */
+      width:calc(100% - 220px);
+      height:100vh;
+      overflow-y:auto; /* FIX */
       background:#f3f4f6;
       padding:20px;
     }
@@ -111,7 +126,7 @@
 
   <p>Dashboard</p>
   <p onclick="goPOS()">Point of Sale</p>
-  <p>Products</p>
+  <p onclick="goProducts()">Products</p>
   <p>Reports</p>
 </div>
 
@@ -195,7 +210,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "https://glsjjkcnrhmdiqtfasrv.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
+  "YOUR_ANON_KEY"
 );
 
 let pieChart, barChart, exportDataArr = [];
@@ -216,14 +231,14 @@ function setDate() {
 async function loadDashboard() {
 
   const { data: products } = await supabase.from("products").select("*");
-  document.getElementById("products").innerText = products.length;
+  document.getElementById("products").innerText = products?.length || 0;
 
   const { data: transactions } = await supabase.from("transactions").select("*");
 
   let sales=0, cost=0;
   let map={};
 
-  transactions.forEach(t=>{
+  transactions?.forEach(t=>{
     sales+=t.total_amount||0;
     cost+=t.total_cost||0;
 
@@ -299,12 +314,12 @@ function exportData(){
 
 // NAV
 window.goPOS=()=>window.location="pos.html";
+window.goProducts=()=>window.location="products.html";
 
+// LOGOUT FIXED
 window.logout = async function () {
   await supabase.auth.signOut();
-
-  // force correct redirect (no blank screen)
-  window.location.href = window.location.origin + "/index.html";
+  window.location.href = "/index.html"; // FIXED PATH
 };
 
 // INIT
