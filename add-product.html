@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Product</title>
+
+  <style>
+    body {
+      font-family:Arial;
+      background:#f3f4f6;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+
+    .card {
+      background:white;
+      padding:30px;
+      border-radius:10px;
+      width:300px;
+    }
+
+    input {
+      width:100%;
+      padding:10px;
+      margin:10px 0;
+    }
+
+    button {
+      width:100%;
+      padding:10px;
+      background:#1e3a8a;
+      color:white;
+      border:none;
+      border-radius:5px;
+      cursor:pointer;
+    }
+
+    .success {
+      color:green;
+      font-size:14px;
+      margin-top:10px;
+      display:none;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h3>Add Product</h3>
+
+  <input id="name" placeholder="Product Name">
+  <input id="buy" type="number" placeholder="Buying Price">
+  <input id="sell" type="number" placeholder="Selling Price">
+  <input id="qty" type="number" placeholder="Quantity">
+
+  <button onclick="save()">Save</button>
+
+  <div id="msg" class="success">Saved Successfully</div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://glsjjkcnrhmdiqtfasrv.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
+);
+
+window.save = async function(){
+
+  const name = document.getElementById("name").value;
+  const buying = document.getElementById("buy").value;
+  const selling = document.getElementById("sell").value;
+  const qty = document.getElementById("qty").value;
+
+  if(!name || !buying || !selling || !qty){
+    alert("Fill all fields");
+    return;
+  }
+
+  const { error } = await supabase.from("products").insert([
+    {
+      name,
+      buying_price: buying,
+      selling_price: selling,
+      quantity: qty
+    }
+  ]);
+
+  if(error){
+    alert("Error saving");
+  } else {
+    document.getElementById("msg").style.display = "block";
+
+    setTimeout(()=>{
+      window.location = "products.html";
+    }, 1200);
+  }
+};
+</script>
+
+</body>
+</html>
