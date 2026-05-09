@@ -3,214 +3,209 @@
 <head>
   <title>Dashboard</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
+      font-family: Arial;
       display: flex;
-      height: 100vh;
-      background: #f3f4f6;
     }
 
-    /* SIDEBAR */
     .sidebar {
-      width: 240px;
-      background: linear-gradient(180deg, #0f172a, #1e3a8a);
+      width: 220px;
+      background: #0f172a;
       color: white;
+      height: 100vh;
       padding: 20px;
-      display: flex;
-      flex-direction: column;
     }
 
-    .logo {
-      font-size: 20px;
-      font-weight: 600;
+    .sidebar h2 {
       margin-bottom: 30px;
     }
 
-    .nav a {
-      display: block;
-      padding: 12px 10px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #cbd5e1;
-      transition: 0.2s;
-    }
-
-    .nav a:hover {
-      background: rgba(255,255,255,0.1);
-      color: white;
-    }
-
-    /* MAIN */
-    .main {
-      flex: 1;
-      padding: 30px;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .logout {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
+    .sidebar p {
+      margin: 15px 0;
       cursor: pointer;
     }
 
-    /* CARDS */
+    .main {
+      flex: 1;
+      background: #f3f4f6;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
       gap: 20px;
+      margin-top: 20px;
     }
 
     .card {
       background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      flex: 1;
     }
 
-    .card h3 {
-      margin: 0 0 10px 0;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
-    .card p {
-      font-size: 22px;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    /* QUICK ACTION */
-    .actions {
-      margin-top: 30px;
+    .charts {
       display: flex;
-      gap: 15px;
+      gap: 20px;
+      margin-top: 30px;
     }
 
-    .btn {
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #0f172a, #1e3a8a);
+    canvas {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .logout {
+      background: red;
       color: white;
+      border: none;
+      padding: 8px 12px;
       cursor: pointer;
+      border-radius: 5px;
     }
-
   </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-  <div class="logo">POS System</div>
-
-  <div class="nav">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="billing.html">Point of Sale</a>
-    <a href="product.html">Products</a>
-    <a href="reports.html">Reports</a>
-  </div>
+  <h2>POS System</h2>
+  <p>Dashboard</p>
+  <p>Point of Sale</p>
+  <p>Products</p>
+  <p>Reports</p>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
-  <div class="header">
-    <h1>Dashboard</h1>
-    <button class="logout" onclick="logout()">Logout</button>
+  <div class="topbar">
+    <h2>Dashboard</h2>
+
+    <div>
+      <span id="userEmail"></span>
+      <button class="logout" onclick="logout()">Logout</button>
+    </div>
   </div>
 
-  <!-- STATS -->
   <div class="cards">
     <div class="card">
-      <h3>Total Sales</h3>
-      <p id="sales">₹0</p>
+      <h4>Total Sales</h4>
+      <h2 id="sales">₹0</h2>
     </div>
 
     <div class="card">
-      <h3>Total Products</h3>
-      <p id="products">0</p>
+      <h4>Total Products</h4>
+      <h2 id="products">0</h2>
     </div>
 
     <div class="card">
-      <h3>Transactions</h3>
-      <p id="transactions">0</p>
+      <h4>Profit</h4>
+      <h2 id="profit">₹0</h2>
     </div>
   </div>
 
-  <!-- ACTIONS -->
-  <div class="actions">
-    <button class="btn" onclick="goBilling()">Start Billing</button>
-    <button class="btn" onclick="goProducts()">Manage Products</button>
+  <div class="charts">
+    <canvas id="pieChart" width="300"></canvas>
+    <canvas id="barChart" width="300"></canvas>
   </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-<script>
-const supabaseClient = supabase.createClient(
-  "https://glsjjkcnrhmdiqtfasrv.supabase.co/rest/v1/",
+const supabase = createClient(
+  "https://glsjjkcnrhmdiqtfasrv.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
 );
 
-/* LOAD DASHBOARD DATA */
-async function loadData() {
+// 🔥 SHOW LOGGED IN USER
+async function loadUser() {
+  const { data } = await supabase.auth.getUser();
 
-  // total products
-  let { data: products } = await supabaseClient
+  if (data.user) {
+    document.getElementById("userEmail").innerText = data.user.email;
+  } else {
+    window.location = "index.html";
+  }
+}
+
+// 🔥 LOGOUT
+async function logout() {
+  await supabase.auth.signOut();
+  window.location = "index.html";
+}
+
+// 🔥 DASHBOARD DATA
+async function loadDashboard() {
+
+  // PRODUCTS COUNT
+  const { data: products } = await supabase
     .from("products")
     .select("*");
 
   document.getElementById("products").innerText = products.length;
 
-  // transactions
-  let { data: transactions } = await supabaseClient
+  // TRANSACTIONS
+  const { data: transactions } = await supabase
     .from("transactions")
     .select("*");
 
-  document.getElementById("transactions").innerText = transactions.length;
+  let totalSales = 0;
+  let totalCost = 0;
 
-  // sales total
-  let total = 0;
-  transactions.forEach(t => total += t.total);
+  transactions.forEach(t => {
+    totalSales += t.total_amount || 0;
+    totalCost += t.total_cost || 0;
+  });
 
-  document.getElementById("sales").innerText = "₹" + total;
+  let profit = totalSales - totalCost;
+
+  document.getElementById("sales").innerText = "₹" + totalSales;
+  document.getElementById("profit").innerText = "₹" + profit;
+
+  // PIE CHART
+  new Chart(document.getElementById("pieChart"), {
+    type: "pie",
+    data: {
+      labels: ["Profit", "Cost"],
+      datasets: [{
+        data: [profit, totalCost],
+      }]
+    }
+  });
+
+  // BAR CHART
+  new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["Sales", "Profit"],
+      datasets: [{
+        data: [totalSales, profit],
+      }]
+    }
+  });
+
 }
 
-loadData();
+// INIT
+loadUser();
+loadDashboard();
 
-/* NAVIGATION */
-function goBilling() {
-  window.location = "billing.html";
-}
+// OPTIONAL LIVE UPDATE
+setInterval(loadDashboard, 5000);
 
-function goProducts() {
-  window.location = "product.html";
-}
-
-/* LOGOUT */
-async function logout() {
-  await supabaseClient.auth.signOut();
-  window.location = "index.html";
-}
 </script>
 
 </body>
