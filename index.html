@@ -1,168 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Page</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      height: 100vh;
-    }
-
-    .container {
-      display: flex;
-      height: 100%;
-    }
-
-    /* LEFT */
-    .left {
-      flex: 1;
-      background: linear-gradient(135deg, #0f172a, #1e3a8a);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 100px;
-    }
-
-    .left h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .left p {
-      color: #cbd5e1;
-      max-width: 450px;
-      line-height: 1.6;
-    }
-
-    .features {
-      margin-top: 30px;
-      color: #93c5fd;
-    }
-
-    .features p {
-      margin: 8px 0;
-    }
-
-    /* RIGHT */
-    .right {
-      flex: 1;
-      background: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .card {
-      background: white;
-      padding: 40px;
-      width: 320px;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .card h2 {
-      margin-bottom: 20px;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #1e3a8a;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-  </style>
+  <title>Login</title>
 </head>
 
 <body>
 
-<div class="container">
+<h2>Login</h2>
 
-  <!-- LEFT -->
-  <div class="left">
-    <h1>Smart POS & Billing System</h1>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
 
-    <p>
-      A web-based solution to manage billing, inventory, and sales efficiently.
-      Designed for retail businesses with real-time tracking and profit insights.
-    </p>
+<button id="loginBtn">Login</button>
 
-    <div class="features">
-      <p>✔ Real-time Billing</p>
-      <p>✔ Inventory Management</p>
-      <p>✔ Sales & Profit Reports</p>
-      <p>✔ Tax Calculation Support</p>
-    </div>
-  </div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  <!-- RIGHT -->
-  <div class="right">
-    <div class="card">
-
-      <h2>Login</h2>
-
-      <input id="email" placeholder="Enter email">
-      <input id="password" type="password" placeholder="Enter password">
-
-      <button id="loginBtn">Login</button>
-
-    </div>
-  </div>
-
-</div>
-
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-const supabaseClient = supabase.createClient(
+const supabase = createClient(
   "YOUR_URL",
   "YOUR_KEY"
-);
+)
 
-// BUTTON CLICK FIX
-document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  console.log("clicked")
 
-async function login() {
-  console.log("clicked");
+  const email = document.getElementById("email").value
+  const password = document.getElementById("password").value
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  if (!email || !password) {
-    alert("Enter email & password");
-    return;
-  }
-
-  const { error } = await supabaseClient.auth.signInWithPassword({
+  const { error } = await supabase.auth.signInWithPassword({
     email,
     password
-  });
+  })
 
   if (error) {
-    alert(error.message);
+    alert(error.message)
   } else {
-    window.location = "dashboard.html";
+    alert("Login success")
+    window.location = "dashboard.html"
   }
-}
+})
 </script>
 
 </body>
