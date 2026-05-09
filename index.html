@@ -18,35 +18,38 @@
       background: linear-gradient(135deg, #0f172a, #1e3a8a);
       color: white;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      align-items: center;
       padding: 80px;
+    }
+
+    .slider-container {
       position: relative;
+      width: 100%;
+      height: 220px;
     }
 
-    /* SLIDER TEXT */
-    .slider {
-      font-size: 22px;
-      font-weight: 500;
-      color: #93c5fd;
-      margin-bottom: 30px;
-      min-height: 30px;
-      transition: opacity 0.5s ease;
-    }
-
-    .fade {
+    .slide {
+      position: absolute;
+      width: 100%;
       opacity: 0;
+      transform: translateX(60px);
+      transition: all 0.6s ease;
     }
 
-    .left h1 {
-      font-size: 36px;
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide h1 {
+      font-size: 34px;
       margin-bottom: 15px;
     }
 
-    .left p {
+    .slide p {
       font-size: 15px;
-      line-height: 1.6;
       color: #cbd5e1;
+      line-height: 1.6;
     }
 
     /* RIGHT SIDE */
@@ -64,24 +67,24 @@
       width: 400px;
       border-radius: 18px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-      animation: floatUp 0.6s ease;
+      animation: fadeUp 0.6s ease;
     }
 
-    @keyframes floatUp {
+    @keyframes fadeUp {
       from {
-        transform: translateY(20px);
         opacity: 0;
+        transform: translateY(20px);
       }
       to {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateY(0);
       }
     }
 
     h2 {
       margin-bottom: 30px;
-      font-weight: 600;
       font-size: 22px;
+      font-weight: 600;
     }
 
     label {
@@ -98,7 +101,7 @@
       border: 1px solid #e5e7eb;
       font-size: 14px;
       background: #f9fafb;
-      transition: all 0.2s;
+      transition: 0.2s;
     }
 
     input:focus {
@@ -140,16 +143,29 @@
 
 <!-- LEFT SIDE -->
 <div class="left">
+  <div class="slider-container">
 
-  <div id="sliderText" class="slider"></div>
+    <div class="slide active">
+      <h1>Smart POS & Billing System</h1>
+      <p>Manage billing, inventory and sales with real-time tracking.</p>
+    </div>
 
-  <h1>Smart POS & Billing System</h1>
+    <div class="slide">
+      <h1>Real-time Inventory</h1>
+      <p>Track stock instantly and never run out of products.</p>
+    </div>
 
-  <p>
-    A web-based solution to manage billing, inventory, and sales efficiently.
-    Designed for retail businesses with real-time tracking and profit insights.
-  </p>
+    <div class="slide">
+      <h1>Sales & Profit Reports</h1>
+      <p>Get insights into your business performance easily.</p>
+    </div>
 
+    <div class="slide">
+      <h1>Tax & Billing Automation</h1>
+      <p>Automatic tax calculations and fast checkout system.</p>
+    </div>
+
+  </div>
 </div>
 
 <!-- RIGHT SIDE -->
@@ -179,30 +195,18 @@ const supabaseClient = supabase.createClient(
   "YOUR_KEY"
 );
 
-/* REAL SLIDER WITH FADE */
-const slides = [
-  "🚀 Fast & Secure Billing Experience",
-  "📊 Real-time Inventory Tracking",
-  "💰 Profit & Sales Insights",
-  "🧾 Smart Tax Calculation",
-  "⚡ Built for Modern Retail Businesses"
-];
+/* SLIDER */
+const slides = document.querySelectorAll(".slide");
+let index = 0;
 
-let i = 0;
-const el = document.getElementById("sliderText");
-
-function updateSlide() {
-  el.classList.add("fade");
-
-  setTimeout(() => {
-    el.innerText = slides[i];
-    el.classList.remove("fade");
-    i = (i + 1) % slides.length;
-  }, 300);
+function showSlide() {
+  slides.forEach(s => s.classList.remove("active"));
+  slides[index].classList.add("active");
+  index = (index + 1) % slides.length;
 }
 
-updateSlide();
-setInterval(updateSlide, 2500);
+showSlide();
+setInterval(showSlide, 3000);
 
 /* LOGIN */
 async function login() {
