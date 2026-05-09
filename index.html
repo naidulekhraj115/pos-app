@@ -1,23 +1,116 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Login Test</title>
+  <title>Login Page</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px;
+    }
+
+    .right {
+      flex: 1;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      padding: 40px;
+      width: 320px;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<h2>Login Test</h2>
+<div class="left">
+  <h1>Smart POS System</h1>
+  <p>Manage billing, inventory and reports easily.</p>
+</div>
 
-<input id="email" placeholder="email"><br><br>
-<input id="password" placeholder="password"><br><br>
+<div class="right">
+  <div class="card">
 
-<button id="loginBtn">Login</button>
+    <h2>Login</h2>
+
+    <input id="email" placeholder="Enter email">
+    <input id="password" type="password" placeholder="Enter password">
+
+    <button id="loginBtn">Login</button>
+
+  </div>
+</div>
+
+<!-- IMPORTANT: working CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-document.getElementById("loginBtn").addEventListener("click", function () {
-  alert("Button is working");
+const supabaseClient = supabase.createClient(
+  "YOUR_URL",
+  "YOUR_KEY"
+);
+
+// click bind
+document.getElementById("loginBtn").addEventListener("click", login);
+
+async function login() {
   console.log("clicked");
-});
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    alert("Enter email & password");
+    return;
+  }
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  console.log(data, error);
+
+  if (error) {
+    alert(error.message);
+  } else {
+    alert("Login success");
+    window.location = "dashboard.html";
+  }
+}
 </script>
 
 </body>
