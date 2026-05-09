@@ -14,31 +14,42 @@
 <button id="loginBtn">Login</button>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "YOUR_URL",
   "YOUR_KEY"
-)
+);
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
-  console.log("clicked")
 
-  const email = document.getElementById("email").value
-  const password = document.getElementById("password").value
+  console.log("CLICK WORKING");
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  })
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  if (error) {
-    alert(error.message)
-  } else {
-    alert("Login success")
-    window.location = "dashboard.html"
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    console.log(data, error);
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Login success");
+      window.location = "dashboard.html";
+    }
+
+  } catch (err) {
+    alert("JS ERROR: " + err.message);
   }
-})
+
+});
+
 </script>
 
 </body>
