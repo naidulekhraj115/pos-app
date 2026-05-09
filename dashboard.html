@@ -11,10 +11,9 @@
       font-family:Arial;
       display:flex;
       height:100vh;
-      overflow:hidden; /* FIX */
+      overflow:hidden; /* ✅ FIX */
     }
 
-    /* SIDEBAR */
     .sidebar {
       width:220px;
       background:#0f172a;
@@ -22,7 +21,7 @@
       height:100vh;
       padding:20px;
 
-      position:fixed; /* FIX */
+      position:fixed; /* ✅ FIX */
       left:0;
       top:0;
     }
@@ -33,14 +32,14 @@
       color:#cbd5e1;
     }
 
-    /* MAIN */
     .main {
-      margin-left:220px; /* FIX */
-      width:calc(100% - 220px);
-      height:100vh;
-      overflow-y:auto; /* FIX */
+      flex:1;
       background:#f3f4f6;
       padding:20px;
+
+      margin-left:220px; /* ✅ FIX */
+      height:100vh;      /* ✅ FIX */
+      overflow-y:auto;   /* ✅ FIX */
     }
 
     .topbar {
@@ -119,18 +118,16 @@
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <h2>POS System</h2>
   <p id="businessDate"></p>
 
   <p>Dashboard</p>
   <p onclick="goPOS()">Point of Sale</p>
-  <p onclick="goProducts()">Products</p>
+  <p>Products</p>
   <p>Reports</p>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
   <div class="topbar">
@@ -141,14 +138,12 @@
     </div>
   </div>
 
-  <!-- DATE FILTER -->
   <div style="margin-top:20px;">
     <input type="date" id="startDate">
     <input type="date" id="endDate">
     <button class="btn" onclick="filterByDate()">Apply</button>
   </div>
 
-  <!-- TOP CARDS -->
   <div class="cards">
     <div class="card">
       <h4>Total Sales</h4>
@@ -166,7 +161,6 @@
     </div>
   </div>
 
-  <!-- METRICS -->
   <div class="metrics">
     <div class="card"><h4>MTD</h4><h2 id="mtd">₹0</h2></div>
     <div class="card"><h4>YTD</h4><h2 id="ytd">₹0</h2></div>
@@ -174,7 +168,6 @@
     <div class="card"><h4>LYYTD</h4><h2 id="lyytd">₹0</h2></div>
   </div>
 
-  <!-- CHARTS -->
   <div class="charts">
     <div class="chart-box">
       <canvas id="pieChart"></canvas>
@@ -185,7 +178,6 @@
     </div>
   </div>
 
-  <!-- PRODUCT PROFIT -->
   <div class="table-box">
     <h3>Profit by Product</h3>
     <button class="btn" onclick="exportData()">Export</button>
@@ -215,30 +207,27 @@ const supabase = createClient(
 
 let pieChart, barChart, exportDataArr = [];
 
-// USER
 async function loadUser() {
   const { data: { user } } = await supabase.auth.getUser();
   document.getElementById("userEmail").innerText = user?.email || "";
 }
 
-// DATE
 function setDate() {
   const d = new Date().toLocaleDateString("en-IN");
   document.getElementById("businessDate").innerText = "Date: " + d;
 }
 
-// DASHBOARD
 async function loadDashboard() {
 
   const { data: products } = await supabase.from("products").select("*");
-  document.getElementById("products").innerText = products?.length || 0;
+  document.getElementById("products").innerText = products.length;
 
   const { data: transactions } = await supabase.from("transactions").select("*");
 
   let sales=0, cost=0;
   let map={};
 
-  transactions?.forEach(t=>{
+  transactions.forEach(t=>{
     sales+=t.total_amount||0;
     cost+=t.total_cost||0;
 
@@ -256,27 +245,19 @@ async function loadDashboard() {
   document.getElementById("sales").innerText="₹"+sales;
   document.getElementById("profit").innerText="₹"+profit;
 
-  // CHART FIX
   if(pieChart) pieChart.destroy();
   if(barChart) barChart.destroy();
 
   pieChart=new Chart(document.getElementById("pieChart"),{
     type:"pie",
-    data:{
-      labels:["Profit","Cost"],
-      datasets:[{data:[profit,cost]}]
-    }
+    data:{ labels:["Profit","Cost"], datasets:[{data:[profit,cost]}] }
   });
 
   barChart=new Chart(document.getElementById("barChart"),{
     type:"bar",
-    data:{
-      labels:["Sales","Profit"],
-      datasets:[{data:[sales,profit]}]
-    }
+    data:{ labels:["Sales","Profit"], datasets:[{data:[sales,profit]}] }
   });
 
-  // TABLE
   let html="";
   exportDataArr=[];
 
@@ -298,7 +279,6 @@ async function loadDashboard() {
   document.getElementById("tableBody").innerHTML=html;
 }
 
-// EXPORT
 function exportData(){
   let csv="Product,Qty,Revenue,Profit\n";
   exportDataArr.forEach(d=>{
@@ -312,21 +292,16 @@ function exportData(){
   a.click();
 }
 
-// NAV
 window.goPOS=()=>window.location="pos.html";
-window.goProducts=()=>window.location="products.html";
 
-// LOGOUT FIXED
 window.logout = async function () {
   await supabase.auth.signOut();
-  window.location.href = "/index.html"; // FIXED PATH
+  window.location.href = window.location.origin + "/index.html";
 };
 
-// INIT
 loadUser();
 setDate();
 loadDashboard();
-
 </script>
 
 </body>
