@@ -9,6 +9,7 @@
       font-family: 'Inter', sans-serif;
       height: 100vh;
       display: flex;
+      overflow: hidden;
     }
 
     /* LEFT SIDE */
@@ -20,20 +21,25 @@
       flex-direction: column;
       justify-content: center;
       padding: 80px;
+      position: relative;
     }
 
+    /* SLIDER TEXT */
     .slider {
-      height: 220px;
-      display: flex;
-      align-items: center;
-      margin-bottom: 40px;
-      font-size: 20px;
-      color: #cbd5e1;
+      font-size: 22px;
       font-weight: 500;
+      color: #93c5fd;
+      margin-bottom: 30px;
+      min-height: 30px;
+      transition: opacity 0.5s ease;
+    }
+
+    .fade {
+      opacity: 0;
     }
 
     .left h1 {
-      font-size: 34px;
+      font-size: 36px;
       margin-bottom: 15px;
     }
 
@@ -54,15 +60,28 @@
 
     .card {
       background: white;
-      padding: 45px 40px;
-      width: 380px;
-      border-radius: 16px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      padding: 50px 45px;
+      width: 400px;
+      border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      animation: floatUp 0.6s ease;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     h2 {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
       font-weight: 600;
+      font-size: 22px;
     }
 
     label {
@@ -79,12 +98,13 @@
       border: 1px solid #e5e7eb;
       font-size: 14px;
       background: #f9fafb;
+      transition: all 0.2s;
     }
 
     input:focus {
       border-color: #1e3a8a;
       background: white;
-      box-shadow: 0 0 0 3px rgba(30,58,138,0.1);
+      box-shadow: 0 0 0 3px rgba(30,58,138,0.15);
       outline: none;
     }
 
@@ -97,12 +117,12 @@
       color: white;
       font-weight: 500;
       cursor: pointer;
-      transition: 0.25s;
+      transition: 0.3s;
     }
 
     .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
 
     .error {
@@ -121,7 +141,7 @@
 <!-- LEFT SIDE -->
 <div class="left">
 
-  <div class="slider" id="sliderText"></div>
+  <div id="sliderText" class="slider"></div>
 
   <h1>Smart POS & Billing System</h1>
 
@@ -159,7 +179,7 @@ const supabaseClient = supabase.createClient(
   "YOUR_KEY"
 );
 
-/* SLIDER */
+/* REAL SLIDER WITH FADE */
 const slides = [
   "🚀 Fast & Secure Billing Experience",
   "📊 Real-time Inventory Tracking",
@@ -169,11 +189,20 @@ const slides = [
 ];
 
 let i = 0;
+const el = document.getElementById("sliderText");
 
-setInterval(() => {
-  document.getElementById("sliderText").innerText = slides[i];
-  i = (i + 1) % slides.length;
-}, 2500);
+function updateSlide() {
+  el.classList.add("fade");
+
+  setTimeout(() => {
+    el.innerText = slides[i];
+    el.classList.remove("fade");
+    i = (i + 1) % slides.length;
+  }, 300);
+}
+
+updateSlide();
+setInterval(updateSlide, 2500);
 
 /* LOGIN */
 async function login() {
