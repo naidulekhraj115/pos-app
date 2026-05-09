@@ -6,58 +6,88 @@
   <style>
     body {
       margin: 0;
-      font-family: 'Inter', 'Segoe UI', sans-serif;
-      background: #f5f7fa;
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+
+    /* LEFT SIDE (AESTHETIC) */
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a);
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      padding: 40px;
+    }
+
+    .left-content {
+      max-width: 400px;
+    }
+
+    .left h1 {
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    .left p {
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+
+    /* RIGHT SIDE (LOGIN) */
+    .right {
+      flex: 1;
+      background: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .card {
       background: white;
-      padding: 40px 35px;
-      width: 360px;
-      border-radius: 14px;
+      padding: 40px;
+      width: 340px;
+      border-radius: 12px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
     h2 {
       margin-bottom: 25px;
-      font-size: 20px;
       font-weight: 600;
-      color: #111827;
     }
 
     label {
       font-size: 13px;
-      font-weight: 500;
       color: #374151;
+      font-weight: 500;
     }
 
     input {
       width: 100%;
       padding: 12px 14px;
       margin: 6px 0 18px 0;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      outline: none;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
       font-size: 14px;
+      background: #f9fafb;
       transition: 0.2s;
     }
 
     input:focus {
       border-color: #1e3a8a;
-      box-shadow: 0 0 0 2px rgba(30,58,138,0.1);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(30,58,138,0.1);
     }
 
     .btn {
       width: 100%;
       padding: 12px;
+      border: none;
+      border-radius: 10px;
       background: linear-gradient(90deg, #0f172a, #1e3a8a);
       color: white;
-      border: none;
-      border-radius: 8px;
       font-weight: 500;
       cursor: pointer;
       transition: 0.25s;
@@ -65,7 +95,7 @@
 
     .btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
     }
 
     .error {
@@ -81,20 +111,34 @@
 
 <body>
 
-<div class="card">
+<!-- LEFT SIDE -->
+<div class="left">
+  <div class="left-content">
+    <h1>Smart POS System</h1>
+    <p>
+      Manage billing, inventory, and reports in one powerful platform.
+      Designed for modern businesses.
+    </p>
+  </div>
+</div>
 
-  <h2>POS Login</h2>
+<!-- RIGHT SIDE -->
+<div class="right">
+  <div class="card">
 
-  <label>Username</label>
-  <input id="email" placeholder="Enter username">
-  <div id="emailError" class="error">Required</div>
+    <h2>Login</h2>
 
-  <label>Password</label>
-  <input id="password" type="password" placeholder="Enter password">
-  <div id="passError" class="error">Required</div>
+    <label>Username</label>
+    <input id="email" placeholder="Enter username">
+    <div id="emailError" class="error">Required</div>
 
-  <button class="btn" onclick="login()">Login</button>
+    <label>Password</label>
+    <input id="password" type="password" placeholder="Enter password">
+    <div id="passError" class="error">Required</div>
 
+    <button class="btn" onclick="login()">Login</button>
+
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
