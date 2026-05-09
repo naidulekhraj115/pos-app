@@ -11,7 +11,7 @@
       font-family:Arial;
       display:flex;
       height:100vh;
-      overflow:hidden; /* ✅ FIX */
+      overflow:hidden;
     }
 
     .sidebar {
@@ -21,9 +21,11 @@
       height:100vh;
       padding:20px;
 
-      position:fixed; /* ✅ FIX */
+      position:fixed;
       left:0;
       top:0;
+
+      box-sizing: border-box; /* ✅ FIX */
     }
 
     .sidebar p {
@@ -37,9 +39,9 @@
       background:#f3f4f6;
       padding:20px;
 
-      margin-left:220px; /* ✅ FIX */
-      height:100vh;      /* ✅ FIX */
-      overflow-y:auto;   /* ✅ FIX */
+      margin-left:220px;
+      height:100vh;
+      overflow-y:auto;
     }
 
     .topbar {
