@@ -2,7 +2,6 @@
 <html>
 <head>
   <title>Dashboard</title>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -115,7 +114,7 @@
 
   <p>Dashboard</p>
   <p onclick="goPOS()">Point of Sale</p>
-  <p>Products</p>
+  <p onclick="goProducts()">Products</p>
   <p>Reports</p>
 </div>
 
@@ -127,6 +126,13 @@
       <span id="userEmail"></span>
       <button class="btn" onclick="logout()">Logout</button>
     </div>
+  </div>
+
+  <!-- DATE RANGE (RESTORED) -->
+  <div style="margin-top:20px;">
+    <input type="date" id="startDate">
+    <input type="date" id="endDate">
+    <button class="btn" onclick="loadDashboard()">Apply</button>
   </div>
 
   <div class="cards">
@@ -157,15 +163,12 @@
   </div>
 
   <div class="table-box">
-    <h3>Profit by Product</h3>
-
+    <h3>Product-wise Sales</h3>
     <table>
       <thead>
         <tr>
           <th>Product</th>
-          <th>Qty</th>
           <th>Revenue</th>
-          <th>Profit</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -196,78 +199,81 @@ function setDate() {
     "Date: " + new Date().toLocaleDateString("en-IN");
 }
 
-// DASHBOARD
+// MAIN LOGIC
 async function loadDashboard() {
 
-  const { data: products, error: pError } =
-    await supabase.from("products").select("*");
+  const start = document.getElementById("startDate").value;
+  const end = document.getElementById("endDate").value;
 
-  if (pError) {
-    console.error("Products error:", pError);
-    return;
-  }
-
+  const { data: products } = await supabase.from("products").select("*");
   document.getElementById("products").innerText = products?.length || 0;
 
-  let totalSales = 0;
-  let totalCost = 0;
+  let query = supabase.from("transactions").select("*");
 
-  let html = "";
+  if (start) query = query.gte("created_at", start);
+  if (end) query = query.lte("created_at", end);
+
+  const { data: transactions } = await query;
+
+  let sales = 0;
+  let cost = 0;
+  let map = {};
+
+  (transactions || []).forEach(t => {
+    sales += t.total_amount || 0;
+    cost += t.total_cost || 0;
+
+    (t.items || []).forEach(i => {
+      if (!map[i.name]) map[i.name] = { revenue: 0 };
+      map[i.name].revenue += i.price * i.qty;
+    });
+  });
+
+  let profit = sales - cost;
+
+  document.getElementById("sales").innerText = "₹" + sales;
+  document.getElementById("profit").innerText = "₹" + profit;
+
   let labels = [];
-  let profits = [];
+  let values = [];
+  let html = "";
 
-  products?.forEach(p => {
-    let revenue = (p.selling_price || 0) * (p.quantity || 0);
-    let cost = (p.buying_price || 0) * (p.quantity || 0);
-    let profit = revenue - cost;
-
-    totalSales += revenue;
-    totalCost += cost;
-
-    labels.push(p.name);
-    profits.push(profit);
+  for (let name in map) {
+    labels.push(name);
+    values.push(map[name].revenue);
 
     html += `
       <tr>
-        <td>${p.name}</td>
-        <td>${p.quantity}</td>
-        <td>₹${revenue}</td>
-        <td>₹${profit}</td>
+        <td>${name}</td>
+        <td>₹${map[name].revenue}</td>
       </tr>
     `;
-  });
-
-  let totalProfit = totalSales - totalCost;
-
-  document.getElementById("sales").innerText = "₹" + totalSales;
-  document.getElementById("profit").innerText = "₹" + totalProfit;
+  }
 
   document.getElementById("tableBody").innerHTML = html;
 
   if (pieChart) pieChart.destroy();
-  if (barChart) barChart.destroy();
-
   pieChart = new Chart(document.getElementById("pieChart"), {
     type: "pie",
     data: {
-      labels: ["Profit", "Cost"],
-      datasets: [{ data: [totalProfit, totalCost] }]
+      labels: labels,
+      datasets: [{ data: values }]
     }
   });
 
+  if (barChart) barChart.destroy();
   barChart = new Chart(document.getElementById("barChart"), {
     type: "bar",
     data: {
-      labels: labels,
-      datasets: [{ label: "Profit", data: profits }]
+      labels: ["Sales", "Profit"],
+      datasets: [{ data: [sales, profit] }]
     }
   });
 }
 
-// NAV
 window.goPOS = () => window.location = "pos.html";
+window.goProducts = () => window.location = "products.html";
 
-// LOGOUT
 window.logout = async function () {
   await supabase.auth.signOut();
   window.location.href = "/";
