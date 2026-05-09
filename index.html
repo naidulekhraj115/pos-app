@@ -101,6 +101,10 @@
       cursor: pointer;
     }
 
+    .btn:hover {
+      opacity: 0.9;
+    }
+
     .error {
       color: #ef4444;
       font-size: 12px;
@@ -146,36 +150,45 @@
     <input id="password" type="password" placeholder="Enter password">
     <div id="passError" class="error">Required</div>
 
-    <button class="btn" onclick="login()">Login</button>
+    <button class="btn" id="loginBtn">Login</button>
 
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!-- SUPABASE -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <script>
-const supabaseClient = supabase.createClient(
+const supabaseClient = window.supabase.createClient(
   "YOUR_URL",
   "YOUR_KEY"
 );
 
+// BUTTON CLICK FIX
+document.getElementById("loginBtn").addEventListener("click", login);
+
 async function login() {
+  console.log("clicked");
+
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if (!email || !password) {
-    document.getElementById("emailError").style.display = !email ? "block" : "none";
-    document.getElementById("passError").style.display = !password ? "block" : "none";
-    return;
-  }
+  // validation
+  document.getElementById("emailError").style.display = !email ? "block" : "none";
+  document.getElementById("passError").style.display = !password ? "block" : "none";
+
+  if (!email || !password) return;
 
   const { error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
 
-  if (error) alert("Invalid credentials");
-  else window.location = "dashboard.html";
+  if (error) {
+    alert(error.message);
+  } else {
+    window.location = "dashboard.html";
+  }
 }
 </script>
 
