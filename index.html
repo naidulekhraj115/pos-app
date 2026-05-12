@@ -84,7 +84,6 @@
     button:hover {
       opacity: 0.9;
     }
-
   </style>
 </head>
 
@@ -125,8 +124,7 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
 );
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
-
+async function login() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -145,7 +143,16 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   } else {
     window.location = "dashboard.html";
   }
+}
 
+// BUTTON CLICK
+document.getElementById("loginBtn").addEventListener("click", login);
+
+// ENTER KEY SUPPORT (IMPORTANT FIX)
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    login();
+  }
 });
 </script>
 
