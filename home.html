@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Home</title>
+
+  <style>
+    body {
+      margin:0;
+      font-family: 'Inter', sans-serif;
+      background:#f6f8fb;
+    }
+
+    .header {
+      display:flex;
+      justify-content:space-between;
+      padding:15px 25px;
+      background:white;
+      border-bottom:1px solid #eee;
+    }
+
+    .container {
+      display:flex;
+      height:calc(100vh - 60px);
+    }
+
+    /* LEFT */
+    .left {
+      width:280px;
+      background:white;
+      border-right:1px solid #eee;
+      padding:15px;
+      overflow:auto;
+    }
+
+    .admin {
+      padding:12px;
+      background:#eef2ff;
+      border-radius:8px;
+      cursor:pointer;
+      margin-bottom:15px;
+      font-weight:500;
+    }
+
+    .store {
+      padding:12px;
+      border-radius:8px;
+      cursor:pointer;
+      margin-bottom:8px;
+      border:1px solid #eee;
+    }
+
+    .store:hover {
+      background:#f3f4f6;
+    }
+
+    .store.active {
+      background:#e0e7ff;
+      border-color:#6366f1;
+    }
+
+    /* RIGHT */
+    .right {
+      flex:1;
+      padding:40px;
+    }
+
+    .placeholder {
+      text-align:center;
+      color:#9ca3af;
+      margin-top:120px;
+    }
+
+    .modules {
+      display:flex;
+      flex-direction:column;
+      gap:15px;
+      max-width:500px;
+    }
+
+    .card {
+      background:white;
+      padding:18px;
+      border-radius:10px;
+      cursor:pointer;
+      box-shadow:0 2px 8px rgba(0,0,0,0.05);
+      transition:0.2s;
+    }
+
+    .card:hover {
+      background:#eef2ff;
+      transform:translateY(-2px);
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <h3>Select Store</h3>
+  <div id="userEmail"></div>
+</div>
+
+<div class="container">
+
+  <!-- LEFT -->
+  <div class="left">
+
+    <div class="admin" onclick="goAdmin()">
+      ⚙️ Admin Portal
+    </div>
+
+    <div id="storeList"></div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+
+    <div id="content">
+      <div class="placeholder">
+        Select a store to continue
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://glsjjkcnrhmdiqtfasrv.supabase.co",
+  "YOUR_ANON_KEY"
+);
+
+let selectedStore = null;
+
+// LOAD USER
+async function loadUser() {
+  const { data } = await supabase.auth.getUser();
+  document.getElementById("userEmail").innerText = data.user.email;
+  return data.user.id;
+}
+
+// LOAD STORES
+async function loadStores() {
+
+  const userId = await loadUser();
+
+  const { data, error } = await supabase
+    .from("user_stores")
+    .select("store_id, stores(name)")
+    .eq("user_id", userId);
+
+  const container = document.getElementById("storeList");
+
+  if (error) {
+    container.innerHTML = "Error loading stores";
+    return;
+  }
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "store";
+    div.innerText = item.stores.name;
+
+    div.onclick = () => selectStore(item.store_id, div);
+
+    container.appendChild(div);
+  });
+}
+
+// SELECT STORE
+function selectStore(id, el) {
+
+  document.querySelectorAll(".store").forEach(s => s.classList.remove("active"));
+  el.classList.add("active");
+
+  selectedStore = id;
+
+  document.getElementById("content").innerHTML = `
+    <div class="modules">
+      <div class="card" onclick="goDashboard()">POS Web</div>
+      <div class="card">Reports</div>
+      <div class="card">Modifications</div>
+    </div>
+  `;
+}
+
+// NAVIGATION
+window.goDashboard = () => {
+  localStorage.setItem("store_id", selectedStore);
+  window.location = "dashboard.html";
+};
+
+window.goAdmin = () => {
+  window.location = "admin.html";
+};
+
+loadStores();
+</script>
+
+</body>
+</html>
