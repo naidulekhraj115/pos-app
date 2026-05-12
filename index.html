@@ -21,26 +21,6 @@
       padding: 100px;
     }
 
-    .left h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-    }
-
-    .left p {
-      color: #cbd5e1;
-      max-width: 450px;
-      line-height: 1.6;
-    }
-
-    .features {
-      margin-top: 30px;
-      color: #93c5fd;
-    }
-
-    .features p {
-      margin: 8px 0;
-    }
-
     .right {
       flex: 1;
       background: #f3f4f6;
@@ -65,11 +45,6 @@
       border: 1px solid #ddd;
     }
 
-    input:focus {
-      border-color: #1e3a8a;
-      outline: none;
-    }
-
     button {
       width: 100%;
       padding: 12px;
@@ -80,10 +55,6 @@
       color: white;
       cursor: pointer;
     }
-
-    button:hover {
-      opacity: 0.9;
-    }
   </style>
 </head>
 
@@ -91,28 +62,16 @@
 
 <div class="left">
   <h1>Smart POS & Billing System</h1>
-  <p>
-    A web-based solution to manage billing, inventory, and sales efficiently.
-  </p>
-
-  <div class="features">
-    <p>✔ Real-time Billing</p>
-    <p>✔ Inventory Management</p>
-    <p>✔ Sales Reports</p>
-    <p>✔ Tax Calculation</p>
-  </div>
 </div>
 
 <div class="right">
   <div class="card">
-
     <h2>Login</h2>
 
     <input id="email" placeholder="Enter email">
     <input id="password" type="password" placeholder="Enter password">
 
     <button id="loginBtn">Login</button>
-
   </div>
 </div>
 
@@ -121,7 +80,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabase = createClient(
   "https://glsjjkcnrhmdiqtfasrv.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdsc2pqa2NucmhtZGlxdGZhc3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMzgxNDUsImV4cCI6MjA5MzkxNDE0NX0.kg6Ng-phIWZIBfk0KLFDl0CaRD1IPL_t_8dExIZ4yoM"
+  "YOUR_ANON_KEY"
 );
 
 async function login() {
@@ -138,21 +97,16 @@ async function login() {
     password
   });
 
-  if (error) {
-    alert(error.message);
-  } else {
-    window.location = "dashboard.html";
-  }
+  if (error) alert(error.message);
+  else window.location = "home.html";
 }
 
-// BUTTON CLICK
+// button click
 document.getElementById("loginBtn").addEventListener("click", login);
 
-// ENTER KEY SUPPORT (IMPORTANT FIX)
-document.addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    login();
-  }
+// ENTER KEY SUPPORT
+document.getElementById("password").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") login();
 });
 </script>
 
